@@ -17,6 +17,8 @@ const JWT_SECRET  = process.env.JWT_SECRET  || "your-secret-key-change-this";
 const CLAUDE_KEY  = process.env.ANTHROPIC_API_KEY || "";
 const ADMIN_PASS  = process.env.ADMIN_PASSWORD || "admin888";
 const PORT        = process.env.PORT || 3001;
+// 中转平台地址（gptsapi.net）
+const API_BASE_URL = process.env.API_BASE_URL || "https://api.gptsapi.net";
 
 app.use(cors());
 app.use(express.json());
@@ -98,12 +100,13 @@ app.post("/api/duanyu", auth, async (req, res) => {
   if (!CLAUDE_KEY) return res.status(500).json({ error: "服务器未配置 API Key" });
 
   try {
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
+    const response = await fetch(`${API_BASE_URL}/v1/messages`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "x-api-key": CLAUDE_KEY,
         "anthropic-version": "2023-06-01",
+        "Authorization": `Bearer ${CLAUDE_KEY}`,
       },
       body: JSON.stringify({
         model: "claude-sonnet-4-20250514",
